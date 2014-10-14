@@ -15,11 +15,14 @@ trait HelloService extends HttpService{
     val usersDao: UserDao
 
     val helloRoute =
-    path(""){
-      get{
-        respondWithMediaType(MediaTypes.`application/json`) {
-          complete{
-            User(name = "Cedric23").toJson.toString()
+      path("add") {
+        put {
+          entity(as[User]) { user =>
+            respondWithMediaType(MediaTypes.`application/json`) {
+              onComplete[Option[User]](usersDao.saveUser(user)) {
+                case Success(value) => complete(value.get.toJson.toString())
+                case Failure(ex) => complete(Map("error" -> ex.getMessage).toJson.toString())
+              }
           }
         }
       }

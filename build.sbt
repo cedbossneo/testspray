@@ -6,6 +6,8 @@ scalaVersion  := "2.11.2"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
+resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+
 resolvers += "spray repo" at "http://repo.spray.io"
 
 libraryDependencies ++= {
@@ -20,3 +22,5 @@ libraryDependencies ++= {
     "org.reactivemongo"   %%  "reactivemongo"       % reactiveMongoV
   )
 }
+
+Revolver.settings.settings

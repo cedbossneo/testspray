@@ -1,10 +1,9 @@
-package boot
-
 import actors.HelloServiceActor
 import akka.actor.Props
 import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
+import boot.{ReactiveMongoConnection, TestActorSystem}
 import spray.can.Http
 
 import scala.concurrent.duration._
