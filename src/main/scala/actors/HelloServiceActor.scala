@@ -1,14 +1,14 @@
 package actors
 
 import akka.actor.Actor
-import dao.UserDao
+import dao.{UserDao, UserDaoReactive}
 import services.HelloService
 
 /**
  * Created by cehauber on 13/10/2014.
  */
-trait HelloServiceActor extends Actor with HelloService{
-  val usersDao: UserDao
+class HelloServiceActor extends Actor with HelloService {
+  val usersDao: UserDao = new UserDaoReactive
 
   def receive = runRoute(helloRoute)
 

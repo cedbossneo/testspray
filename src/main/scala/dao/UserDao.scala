@@ -1,8 +1,7 @@
 package dao
 
-import akka.actor.ActorSystem
-import models.User
-import reactivemongo.api.collections.default.BSONCollection
+import boot.ReactiveMongoConnection
+import models._
 import reactivemongo.bson.BSONDocument
 
 import scala.concurrent.Future
@@ -10,14 +9,13 @@ import scala.concurrent.Future
 /**
  * Created by cedric on 13/10/14.
  */
-trait UserDao {
+
+trait UserDao extends ReactiveMongoConnection {
   def getUsers: Future[List[User]]
 }
 
-class UserDaoImpl(usersCollection: BSONCollection, system: ActorSystem) extends UserDao{
-  implicit val context = system.dispatcher
-
+class UserDaoReactive extends UserDao {
   def getUsers: Future[List[User]] = {
-    usersCollection.find(BSONDocument()).cursor[User].collect[List[User]]()
+    usersCollection.find(BSONDocument()).cursor[User].collect[List]()
   }
 }

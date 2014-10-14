@@ -1,6 +1,6 @@
 package models
 
-import spray.json.{JsonFormat, DefaultJsonProtocol}
+import spray.json.DefaultJsonProtocol
 
 /**
  * Created by cedric on 13/10/14.
