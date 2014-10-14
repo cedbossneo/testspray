@@ -15,26 +15,34 @@ trait HelloService extends HttpService{
     val usersDao: UserDao
 
     val helloRoute =
-      path("add") {
+      path("users") {
         put {
           entity(as[User]) { user =>
             respondWithMediaType(MediaTypes.`application/json`) {
               onComplete[Option[User]](usersDao.saveUser(user)) {
                 case Success(value) => complete(value.get.toJson.toString())
-                case Failure(ex) => complete(Map("error" -> ex.getMessage).toJson.toString())
+                case Failure(ex) => complete(Map("error" -> ex.getMessage, "result" -> "ko").toJson.toString())
               }
           }
         }
-      }
+        } ~
+          get {
+            respondWithMediaType(MediaTypes.`application/json`) {
+              onComplete[List[User]](usersDao.getUsers) {
+                case Success(value) => complete(value.toJson.toString())
+                case Failure(ex) => complete(Map("error" -> ex.getMessage, "result" -> "ko").toJson.toString())
+              }
+            }
+          }
     }~
-    path("list") {
-      get{
-        respondWithMediaType(MediaTypes.`application/json`) {
-          onComplete[List[User]](usersDao.getUsers) {
-            case Success(value) => complete(value.toJson.toString())
-            case Failure(ex) => complete(Map("error" -> ex.getMessage).toJson.toString())
+        path("user" / Rest) { name =>
+          delete {
+            respondWithMediaType(MediaTypes.`application/json`) {
+              onComplete(usersDao.deleteUser(name)) {
+                case Success(value) => complete(Map("result" -> "ok").toJson.toString())
+                case Failure(ex) => complete(Map("error" -> ex.getMessage, "result" -> "ko").toJson.toString())
+              }
           }
         }
-      }
     }
 }

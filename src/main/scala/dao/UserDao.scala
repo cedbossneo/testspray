@@ -3,6 +3,7 @@ package dao
 import boot.ReactiveMongoConnection
 import models._
 import reactivemongo.bson.BSONDocument
+import reactivemongo.core.commands.LastError
 
 import scala.concurrent.Future
 
@@ -12,6 +13,8 @@ import scala.concurrent.Future
 
 trait UserDao extends ReactiveMongoConnection {
   def saveUser(user: User): Future[Option[User]]
+
+  def deleteUser(name: String): Future[LastError]
 
   def getUsers: Future[List[User]]
 
@@ -31,5 +34,9 @@ class UserDaoReactive extends UserDao {
 
   def findUserByName(name: String): Future[Option[User]] = {
     usersCollection.find(BSONDocument("name" -> name)).one[User]
+  }
+
+  def deleteUser(name: String): Future[LastError] = {
+    usersCollection.remove(BSONDocument("name" -> name))
   }
 }
