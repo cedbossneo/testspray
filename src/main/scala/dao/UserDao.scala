@@ -12,7 +12,7 @@ import scala.concurrent.Future
  */
 
 trait UserDao extends ReactiveMongoConnection {
-  def saveUser(user: User): Future[Option[User]]
+  def saveUser(user: User): Future[LastError]
 
   def deleteUser(name: String): Future[LastError]
 
@@ -26,10 +26,8 @@ class UserDaoReactive extends UserDao {
     usersCollection.find(BSONDocument()).cursor[User].collect[List]()
   }
 
-  def saveUser(user: User): Future[Option[User]] = {
-    usersCollection.save(user).flatMap { _ =>
-      findUserByName(user.name)
-    }
+  def saveUser(user: User): Future[LastError] = {
+    usersCollection.save(user)
   }
 
   def findUserByName(name: String): Future[Option[User]] = {
