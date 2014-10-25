@@ -9,7 +9,7 @@ import spray.routing.HttpService
 
 import scala.util.{Failure, Success}
 
-trait HelloService extends HttpService {
+trait UserService extends HttpService {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

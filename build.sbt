@@ -1,3 +1,7 @@
+import DockerKeys._
+import sbtdocker.{ Dockerfile, ImageName}
+import com.typesafe.sbt.packager.Keys._
+
 name := "testspray"
 
 version := "1.0"
@@ -8,7 +12,11 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 
+resolvers += "Sonatype Repository" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
 resolvers += "spray repo" at "http://repo.spray.io"
+
+resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= {
   val akkaV = "2.3.6"
@@ -18,11 +26,44 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-can"           % sprayV,
     "io.spray"            %%  "spray-routing"       % sprayV,
     "io.spray"            %%  "spray-json"          % "1.3.0",
-    "io.spray" %% "spray-testkit" % sprayV % "test",
-    "org.specs2" %% "specs2" % "2.4.6" % "test",
+    "io.spray"            %%  "spray-testkit"       % sprayV % "test",
+    "org.specs2"          %%  "specs2"              % "2.4.6" % "test",
     "com.typesafe.akka"   %%  "akka-actor"          % akkaV,
     "org.reactivemongo"   %%  "reactivemongo"       % reactiveMongoV
   )
 }
 
 Revolver.settings.settings
+
+packageArchetype.java_server
+
+sbtdocker.Plugin.dockerSettings
+
+mappings in Universal += baseDirectory.value / "docker" / "start" -> "bin/start"
+
+docker <<= docker.dependsOn(com.typesafe.sbt.packager.universal.Keys.stage.in(Compile))
+
+// Define a Dockerfile
+dockerfile in docker <<= (name, stagingDirectory in Universal) map {
+  case (appName, stageDir) =>
+    val workingDir = s"/opt/${appName}"
+    new Dockerfile {
+      // Use a base image that contain Java
+      from("relateiq/oracle-java8")
+      maintainer("Cedric Hauber")
+      expose(1600)
+      add(stageDir, workingDir)
+      run("chmod",  "+x",  s"/opt/${appName}/bin/${appName}")
+      run("chmod",  "+x",  s"/opt/${appName}/bin/start")
+      workDir(workingDir)
+      entryPointShell(s"bin/start", appName, "$@")
+    }
+}
+
+imageName in docker := {
+  ImageName(
+    namespace = Some("com.testspray"),
+    repository = name.value
+    //,tag = Some("v" + version.value))
+  )
+}

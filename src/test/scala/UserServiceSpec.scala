@@ -1,14 +1,14 @@
 import dao.{UserDao, UserDaoReactive}
 import models.User
 import org.specs2.mutable.Specification
-import services.HelloService
+import services.UserService
 import spray.httpx.SprayJsonSupport._
 import spray.testkit.Specs2RouteTest
 
 /**
  * Created by cehauber on 15/10/2014.
  */
-class HelloServiceSpec extends Specification with Specs2RouteTest with HelloService {
+class UserServiceSpec extends Specification with Specs2RouteTest with UserService {
   val usersDao: UserDao = new UserDaoReactive
 
   def actorRefFactory = system // connect the DSL to the test ActorSystem
