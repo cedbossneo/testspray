@@ -29,6 +29,7 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-testkit"       % sprayV % "test",
     "org.specs2"          %%  "specs2"              % "2.4.6" % "test",
     "com.typesafe.akka"   %%  "akka-actor"          % akkaV,
+    "com.typesafe.akka"   %%  "akka-cluster"        % akkaV,
     "org.reactivemongo"   %%  "reactivemongo"       % reactiveMongoV
   )
 }
@@ -59,7 +60,7 @@ dockerfile in docker <<= (name, stagingDirectory in Universal) map {
 
 imageName in docker := {
   ImageName(
-    namespace = Some("com.testspray"),
+    namespace = Some("cedbossneo"),
     repository = name.value
     //,tag = Some("v" + version.value))
   )

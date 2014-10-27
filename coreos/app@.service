@@ -16,7 +16,7 @@ EnvironmentFile=/etc/environment
 # Pull the docker image from DockerHub
 ExecStartPre=-/usr/bin/docker kill app-%i
 ExecStartPre=-/usr/bin/docker rm app-%i
-ExecStartPre=-/usr/bin/docker pull williamyeh/scala:latest
+ExecStartPre=-/usr/bin/docker pull cedbossneo/testspray
 
 # Get the list of seed nodes from etcd and write it to /home/core/app-config/seeds.txt
 ExecStartPre=/bin/sh -c "mkdir -p /home/core/app-config; etcdctl ls /announce/services/ | xargs -L1 etcdctl get > /home/core/app-config/seeds.txt"
@@ -24,14 +24,11 @@ ExecStartPre=/bin/sh -c "mkdir -p /home/core/app-config; etcdctl ls /announce/se
 # Pull the latest app from github
 ExecStartPre=/bin/sh -c "git clone https://github.com/cedbossneo/testspray.git /home/core/app"
 
-# Run docker image
-ExecStartPre=/bin/sh -c "cd /home/core/app && sbt docker"
-
 # Start the docker container:
 # --net=host: Don't virtualize the networking, use the host interfaces directly
 # -v /home/core/app-config:/app/config:ro: Mount the seeds file as a read-only
 # -e Set environment variables: The seeds file, the application port, and the local ip
-ExecStart=/usr/bin/docker run --rm --name app-%i --net=host -v /home/core/app:/app/:rw -v /home/core/app-config:/app/config:ro -e "APP_SEEDS_FILE=/app/config/seeds.txt" -e "APP_PORT=%i" -e "APP_HOST=${COREOS_PRIVATE_IPV4}" com.testspray/testspray /bin/bash -c "git pull; sbt run"
+ExecStart=/usr/bin/docker run --rm --name app-%i --net=host -v /home/core/app:/app/:rw -v /home/core/app-config:/app/config:ro -e "APP_SEEDS_FILE=/app/config/seeds.txt" -e "APP_PORT=%i" -e "APP_HOST=${COREOS_PRIVATE_IPV4}" cedbossneo/testspray
 
 # When stopped, stop the docker container
 ExecStop=/usr/bin/docker stop app-%i
