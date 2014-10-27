@@ -39,8 +39,6 @@ packageArchetype.java_server
 
 sbtdocker.Plugin.dockerSettings
 
-mappings in Universal += baseDirectory.value / "docker" / "start" -> "bin/start"
-
 docker <<= docker.dependsOn(com.typesafe.sbt.packager.universal.Keys.stage.in(Compile))
 
 // Define a Dockerfile
@@ -51,12 +49,11 @@ dockerfile in docker <<= (name, stagingDirectory in Universal) map {
       // Use a base image that contain Java
       from("relateiq/oracle-java8")
       maintainer("Cedric Hauber")
-      expose(1600)
+      expose(8080)
       add(stageDir, workingDir)
       run("chmod",  "+x",  s"/opt/${appName}/bin/${appName}")
-      run("chmod",  "+x",  s"/opt/${appName}/bin/start")
       workDir(workingDir)
-      entryPointShell(s"bin/start", appName, "$@")
+      entryPointShell(s"bin/${appName}", appName, "$@")
     }
 }
 
