@@ -1,7 +1,8 @@
-import dao.{UserDao, UserDaoReactive}
-import models.User
+import com.testspray.dao.{UserDao, UserDaoReactive}
+import com.testspray.models.User
+import com.testspray.services.UserService
 import org.specs2.mutable.Specification
-import services.UserService
+import reactivemongo.api.{DB, MongoDriver}
 import spray.httpx.SprayJsonSupport._
 import spray.testkit.Specs2RouteTest
 
@@ -9,7 +10,14 @@ import spray.testkit.Specs2RouteTest
  * Created by cehauber on 15/10/2014.
  */
 class UserServiceSpec extends Specification with Specs2RouteTest with UserService {
-  val usersDao: UserDao = new UserDaoReactive
+
+  val usersDao: UserDao = new UserDaoReactive(createDB(), system)
+
+  def createDB(): DB = {
+    val mongoDriver = new MongoDriver
+    val mongoConnection = mongoDriver.connection(List("localhost"))
+    mongoConnection("testspray-test")
+  }
 
   def actorRefFactory = system // connect the DSL to the test ActorSystem
 

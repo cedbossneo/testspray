@@ -1,7 +1,9 @@
-package dao
+package com.testspray.dao
 
-import boot.ReactiveMongoConnection
-import models._
+import akka.actor.ActorSystem
+import com.testspray.models._
+import reactivemongo.api.DB
+import reactivemongo.api.collections.default.BSONCollection
 import reactivemongo.bson.BSONDocument
 import reactivemongo.core.commands.LastError
 
@@ -11,7 +13,7 @@ import scala.concurrent.Future
  * Created by cedric on 13/10/14.
  */
 
-trait UserDao extends ReactiveMongoConnection {
+trait UserDao {
   def saveUser(user: User): Future[LastError]
 
   def deleteUser(name: String): Future[LastError]
@@ -21,7 +23,10 @@ trait UserDao extends ReactiveMongoConnection {
   def findUserByName(name: String): Future[Option[User]]
 }
 
-class UserDaoReactive extends UserDao {
+class UserDaoReactive(db: DB, system: ActorSystem) extends UserDao {
+  implicit val context = system.dispatcher
+  val usersCollection: BSONCollection = db("testspray.users")
+
   def getUsers: Future[List[User]] = {
     usersCollection.find(BSONDocument()).cursor[User].collect[List]()
   }

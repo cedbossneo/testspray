@@ -1,7 +1,7 @@
-package services
+package com.testspray.services
 
-import dao.UserDao
-import models.User
+import com.testspray.dao.UserDao
+import com.testspray.models.User
 import spray.http.MediaTypes
 import spray.httpx.SprayJsonSupport._
 import spray.json.DefaultJsonProtocol._

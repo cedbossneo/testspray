@@ -1,4 +1,4 @@
-package models
+package com.testspray.models
 
 import spray.httpx.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
