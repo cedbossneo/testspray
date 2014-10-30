@@ -22,6 +22,7 @@ ExecStartPre=-/usr/bin/docker pull cedbossneo/testspray
 ExecStartPre=/bin/sh -c "mkdir -p /home/core/app-config; etcdctl ls /announce/services/ | xargs -L1 etcdctl get > /home/core/app-config/seeds.txt"
 
 # Pull the latest app from github
+ExecStartPre=/bin/sh -c "rm -Rf /home/core/app"
 ExecStartPre=/bin/sh -c "git clone https://github.com/cedbossneo/testspray.git /home/core/app"
 
 # Start the docker container:
